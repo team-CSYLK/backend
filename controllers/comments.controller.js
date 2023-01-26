@@ -1,7 +1,5 @@
 const CommentService = require('../services/comments.service');
 
-// todo - Error Handler
-
 class CommentsController {
 
   commentService = new CommentService();
@@ -30,8 +28,6 @@ class CommentsController {
     const { commentContent } = req.body;
     
     // 구현 파트
-    // todo 토큰 유저와 댓글 작성자 동일 인물인지 체크할 것
-
     const updateComment = await this.commentService.updateComment(
       commentId,
       commentContent
@@ -46,7 +42,6 @@ class CommentsController {
     const { commentId } = req.params;
 
     // 구현 파트
-    // todo 토큰 유저와 댓글 작성자 동일 인물인지 체크할 것
     const deleteComment = await this.commentService.deleteComment(
       commentId
     );
