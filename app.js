@@ -19,6 +19,8 @@ const passport = require('passport');
 const configurePassport = require('./config/passport')(app);
 configurePassport(passport);
 
+
+
 app.use('/', indexRouter);
 //임시 소셜 로그인 버튼
 app.get('/', (req, res) => {
