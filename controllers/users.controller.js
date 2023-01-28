@@ -7,6 +7,12 @@ class UsersController {
     const { nickname } = req.body;
     const userId = res.locals.userId;
 
+    const checkNickname = /^[a-zA-Z0-9]{3,}$/;
+
+    if (!checkNickname.test(nickname)) {
+      throw error;
+    }
+
     await this.usersService.createNickname(nickname, userId);
 
     res.sendStatus(201);
