@@ -9,3 +9,4 @@ router.post('/sendNickname', tokenMiddleware, usersController.userNickname);
 router.get('/:nickname', tokenMiddleware, usersController.userProfile);
 
 module.exports = router;
+//
