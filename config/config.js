@@ -6,7 +6,7 @@ const development = {
   password: env.DBPASSWORD,
   database: env.DBNAME + '_dev',
   host: env.DBHOST,
-  dialect: 'mysql'
+  dialect: 'mysql',
 };
 
 const test = {
