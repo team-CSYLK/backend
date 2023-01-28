@@ -31,7 +31,6 @@ module.exports = (app) => (passport) => {
         callbackURL: process.env['KAKAO_CALLBACK'],
       },
       async (accessToken, refreshToken, profile, done) => {
-        // console.log('kakao profile', profile);
         const email = profile._json.kakao_account.email;
         try {
           const exUser = await Users.findOne({
@@ -46,6 +45,7 @@ module.exports = (app) => (passport) => {
             const newUser = await Users.create({
               email: email,
               name: profile.displayName,
+              imageProfile: profile._json.properties.profile_image,
               snsId: profile.id,
               provider: 'kakao',
             });

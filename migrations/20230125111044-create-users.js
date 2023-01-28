@@ -24,9 +24,9 @@ module.exports = {
       provider: {
         type: Sequelize.STRING,
       },
-      // imageProfile: {
-      //   type: Sequelize.FILE
-      // },
+      imageProfile: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

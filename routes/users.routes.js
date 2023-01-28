@@ -5,6 +5,7 @@ const tokenMiddleware = require('../middleware/token-middleware');
 const UsersController = require('../controllers/users.controller');
 const usersController = new UsersController();
 
-router.post('/nickname', tokenMiddleware, usersController.userNickname);
+router.post('/sendNickname', tokenMiddleware, usersController.userNickname);
+router.get('/:nickname', tokenMiddleware, usersController.userProfile);
 
 module.exports = router;

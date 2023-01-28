@@ -7,6 +7,15 @@ class UsersRepository {
     return user;
   };
 
+  findNick = async (nickname) => {
+    console.log(nickname);
+    const nicknameEx = await Users.findOne({ where: { nickname } });
+
+    console.log(nicknameEx);
+
+    return nicknameEx;
+  };
+
   createNickname = async (nickname, userId) => {
     const newNickname = await Users.update({ nickname }, { where: { userId } });
 

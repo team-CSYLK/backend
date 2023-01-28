@@ -11,6 +11,14 @@ class UsersController {
 
     res.sendStatus(201);
   };
+
+  userProfile = async (req, res) => {
+    const { nickname } = req.params;
+
+    const profile = await this.usersService.findUser(nickname);
+
+    res.status(201).json({ statusCode: 201, data: profile });
+  };
 }
 
 module.exports = UsersController;

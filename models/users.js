@@ -50,10 +50,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      // imageProfile: {
-      //   allowNull: false,
-      //   type: DataTypes.FILE,
-      // },
+      imageProfile: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
 
       createdAt: {
         allowNull: false,
