@@ -1,16 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
+
+const quizRouter = require('./quiz.routes');
+const commentRouter = require('./comment.routes')
+const membersRouter = require('./members.routes')
+
+router.use('/quiz', quizRouter);
+router.use('/members' , membersRouter);
+router.use('/comment', commentRouter);
 
 
-const authRouter = require('./auth.routes');
-const usersRouter = require('./users.routes');
-// const postsRouter = require('./posts.routes');
-// const commentsRouter = require('./comments.routes');
-
-router.use('/auth', authRouter);
-router.use('/', usersRouter);
-// router.use('/posts' , postsRouter);
-// router.use('/comments', commentsRouter);
 
 module.exports = router;

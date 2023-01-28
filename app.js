@@ -3,58 +3,37 @@ const express = require('express');
 const cookieParesr = require('cookie-parser');
 const indexRouter = require('./routes');
 const cors = require('cors');
+const HttpExceptionFilter = require('./middleware/http.exception.middleware');
+const NotFoundFilter = require('./middleware/page.notfound.middleware');
 
 const app = express();
+
+//* env 없을시 3000 포트로 설정.
 const port = process.env.PORT || 3000;
 
+//* Middleware
 app.use(express.json());
 app.use(cookieParesr());
 
-//세션 세팅
-const configureSession = require('./config/session');
-configureSession(app);
-
-//패스포트 새팅
-const passport = require('passport');
-const configurePassport = require('./config/passport')(app);
-configurePassport(passport);
-
-
-
-app.use('/', indexRouter);
-//임시 소셜 로그인 버튼
-app.get('/', (req, res) => {
-  /**
-   * req.user가 있는 경우는 소셜 로그인에 성공한 경우
-   * passport에 의해 user가 주입됨 (deserialize 확인)
-   */
-  if (req.user) {
-    res.send(`
-        <h3>Login Success</h3>
-        <a href="/auth/logout">Logout</a>
-        <p>
-            ${JSON.stringify(req.user, null, 2)}
-        </p>
-      `);
-  } else {
-    res.send(`
-        <h3>Node Passport Social Login</h3>
-        <a href="/auth/login/google">Login with Google+</a>
-        <a href="/auth/login/facebook">Login with Facebook</a>
-        <a href="/auth/login/naver">Login with Naver</a>
-        <a href="/auth/login/kakao">Login with Kakao</a>
-    `);
-  }
-});
-
 //* CORS 설정.
-app.use(
-  cors({
-    exposedHeaders: ['Authorization', 'nickname'],
-    credential: 'true',
-  })
-);
+app.use(cors({
+  exposedHeaders: ['access_token']
+}));
+
+//* ./routes/index.js 연결
+app.use('/', indexRouter);
+
+//* HttpException Filter
+//* 컨트롤러 계층 상단에 require('express-async-errors') 해주셔야
+//* 에러처리가 가능합니다.
+
+// //* 컨트롤러, 서비스 계층에서 throw 사용하면 이곳으로 와서 에러처리가 됩니다.
+// app.use(HttpExceptionFilter);
+
+// //* 가장 마지막에 거치는 미들웨어 입니다.
+// //* 유효하지 않은 URL에 접속을 시도 할경우 404 에러처리를 해줍니다.
+// app.use(NotFoundFilter);
 
 app.listen(port, () => {
-  console.log(port, '포트로 서버가 열렸어요!');
+  console.log(port, "포트로 서버가 열렸어요!");
 });
