@@ -9,5 +9,5 @@ app.use(express.json());
 app.use('/', indexRouter);
 
 app.listen(port, () => {
-    console.log(port, "포트로 서버가 열렸어요!");
-  });
+  console.log(port, '포트로 서버가 열렸어요!');
+});
