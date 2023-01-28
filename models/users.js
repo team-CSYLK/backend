@@ -33,8 +33,20 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      nickname: {
+      name: {
         allowNull: false,
+        type: DataTypes.STRING,
+      },
+
+      nickname: {
+        type: DataTypes.STRING,
+      },
+
+      snsId: {
+        type: DataTypes.STRING,
+      },
+
+      provider: {
         type: DataTypes.STRING,
       },
 
