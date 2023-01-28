@@ -33,15 +33,27 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      nickname: {
+      name: {
         allowNull: false,
         type: DataTypes.STRING,
       },
 
-      // imageProfile: {
-      //   allowNull: false,
-      //   type: DataTypes.FILE,
-      // },
+      nickname: {
+        type: DataTypes.STRING,
+      },
+
+      snsId: {
+        type: DataTypes.STRING,
+      },
+
+      provider: {
+        type: DataTypes.STRING,
+      },
+
+      imageProfile: {
+        allowNull: false,
+        type: DataTypes.STRING,
+      },
 
       createdAt: {
         allowNull: false,
