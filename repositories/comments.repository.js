@@ -34,5 +34,3 @@ class CommentRepository {
     return result;
   };
 }
-
-module.exports = CommentRepository;

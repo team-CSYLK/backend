@@ -4,6 +4,27 @@ const { posts } = require('../routes');
 class PostsService {
   postsRepository = new PostRepository();
 
+  // 게시글 작성
+  // images = req.files
+  createPost = async (imageUrl, userId, postContent) => {
+
+    // const imageObject = images[0].transforms;
+    // const result = imageObject.map((image) => {
+    //   return {
+    //     images: image.location,
+    //   };
+    // });
+    // const imageUrl = result;
+
+
+    const createPostData = await this.postsRepository.createPost(
+      imageUrl,
+      userId,
+      postContent
+    );
+    return createPostData;
+  };
+
   // 전체 게시글 조회
   findAllPost = async () => {
     const allPost = await this.postsRepository.findAllPost();
@@ -33,22 +54,22 @@ class PostsService {
 
   // 게시글 수정
   updatePost = async (postId, postContent, image) => {
-    const findPost = await this.postRepository.findOnePost(postId)
+    const findPost = await this.postRepository.findOnePost(postId);
 
-    if(findPost.userId == Users.userId){
-        await this.postRepository.updatePost({postId, postContent, image});
-        return ;
-    } 
+    if (findPost.userId == Users.userId) {
+      await this.postRepository.updatePost({ postId, postContent, image });
+      return;
+    }
   };
 
   // 게시글 삭제
   deletePosts = async (postId, Users) => {
-    const findPost = await this.postRepository.findOnePost(postId)
+    const findPost = await this.postRepository.findOnePost(postId);
 
-    if(findPost.userId == Users.userId){
+    if (findPost.userId == Users.userId) {
       await this.postRepository.deletePost(postId);
-      return ;
-      }
+      return;
+    }
   };
 
   // 게시글 좋아요

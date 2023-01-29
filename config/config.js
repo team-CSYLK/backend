@@ -7,7 +7,6 @@ const development = {
   database: env.DBNAME + '_dev',
   host: env.DBHOST,
   dialect: 'mysql',
-  timezone : "Asia/Seoul"
 };
 
 const test = {

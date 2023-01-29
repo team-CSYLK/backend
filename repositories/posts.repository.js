@@ -1,5 +1,5 @@
-const { Users, Posts, Comments, Likes } = require("../models");
-const user = require("../models/users");
+const { Users, Posts, Comments, Likes } = require('../models');
+const user = require('../models/users');
 
 class PostRepository {
   // 게시글 전체 조회
@@ -36,9 +36,12 @@ class PostRepository {
   };
 
   // 게시글 수정
-  updatePost = async ({postId, postContent, image}) => {
-    await Posts.update({postContent:postContent, image:image}, {where:{postId:postId}})
-    return ;
+  updatePost = async ({ postId, postContent, image }) => {
+    await Posts.update(
+      { postContent: postContent, image: image },
+      { where: { postId: postId } }
+    );
+    return;
   };
 
   //게시글 삭제
@@ -51,18 +54,16 @@ class PostRepository {
   };
 
   //게시글 업로드
-  createPost = async (imageUrls, userId, postContent) => {
+  createPost = async (imageUrl, userId, postContent) => {
     const createPost = await Posts.create({
-      image: imageUrls,
-      userId: userId,
-      postContent: postContent,
+      imageUrl,
+      userId,
+      postContent
     });
-
     return createPost;
   };
 
   //게시글 좋아요
-  
 }
 
 module.exports = PostRepository;

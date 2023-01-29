@@ -12,7 +12,7 @@ const s3 = new aws.S3({
   region: process.env.AWS_KEY_REGION,
 });
 
-const upload = multer({
+const   upload = multer({
   storage: multerS3({
     s3: s3,
     bucket: process.env.AWS_BUCKET_NAME,
@@ -29,22 +29,8 @@ const upload = multer({
         },
       },
     ],
-    acl: 'public-read',
-    contentType: multerS3.AUTO_CONTENT_TYPE,
+    acl: 'public-read'
   }),
 });
-
-// const upload = multer({
-//   storage: multerS3({
-//       s3: s3,
-//       bucket: process.env.AWS_BUCKET_NAME,
-//       key: function (req, file, cb) {
-//           let extension = path.extname(file.originalname);
-//           cb(null, Date.now().toString() + extension);
-//       },
-//       contentType: multerS3.AUTO_CONTENT_TYPE,
-//       acl: 'public-read-write',
-//   }),
-// });
 
 module.exports = upload;
