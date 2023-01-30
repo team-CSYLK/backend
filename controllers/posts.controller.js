@@ -52,8 +52,9 @@ class PostsController {
   updatePost = async (req, res) => {
     try {
       const { postId } = req.params;
-      const { postContent, image } = req.body;
-      await this.postsService.updatePost(postId, postContent, image);
+      const { postContent } = req.body;
+      console.log('확인',postContent)
+      await this.postsService.updatePost(postId, postContent);
       res.sendStatus(201);
     } catch (error) {
       return res
@@ -69,7 +70,7 @@ class PostsController {
       const { postId } = req.params;
 
       const findPost = await this.postsService.findAuthor(postId);
-      const findkey = findPost.postImg.split('/')[4];
+      const findkey = findPost.imageUrl.split('/')[4];
       const keyinfo = `posts-image/${findkey}`;
       // console.log(findkey);
 
@@ -105,19 +106,20 @@ class PostsController {
     }
   };
 
-  // 게시글 좋아요 v
-  // likePost = async (req, res) => {
-  //   try {
-  //     const { postId } = req.params;
-  //     const { isLiked } = req.body;
-  //     await this.postsService.likeEvent(postId, isLiked);
-  //     return res.sendStatus(204);
-  //   } catch (error) {
-  //     return res
-  //       .status(error.status || 400)
-  //       .send({ ok: false, message: error.message });
-  //   }
-  // };
+  //게시글 좋아요 v
+  likePost = async (req, res) => {
+    try {
+      const { postId } = req.params;
+      const { userId } = res.locals.user;
+      const { isLiked } = req.body;
+      await this.postsService.likeEvent(postId, userId, isLiked);
+      return res.sendStatus(204);
+    } catch (error) {
+      return res
+        .status(error.status || 400)
+        .send({ ok: false, message: error.message });
+    }
+  };
 }
 
 module.exports = PostsController;

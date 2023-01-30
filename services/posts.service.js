@@ -1,13 +1,13 @@
-const PostRepository = require('../repositories/posts.repository');
+const PostsRepository = require('../repositories/posts.repository');
+const { Users } = require('../models');
 const { posts } = require('../routes');
 
 class PostsService {
-  postsRepository = new PostRepository();
+  postsRepository = new PostsRepository();
 
   // 게시글 작성
   // images = req.files
   createPost = async (imageUrl, userId, postContent) => {
-
     // const imageObject = images[0].transforms;
     // const result = imageObject.map((image) => {
     //   return {
@@ -15,7 +15,6 @@ class PostsService {
     //   };
     // });
     // const imageUrl = result;
-
 
     const createPostData = await this.postsRepository.createPost(
       imageUrl,
@@ -38,7 +37,7 @@ class PostsService {
         postId: posts.postId,
         userId: posts.userId,
         postContent: posts.postContent,
-        image: posts.image,
+        imageUrl: posts.imageUrl,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
         // isLiked: posts.isLiked,
@@ -52,28 +51,50 @@ class PostsService {
     return postOne;
   };
 
-  // 게시글 수정
-  updatePost = async (postId, postContent, image) => {
-    const findPost = await this.postRepository.findOnePost(postId);
+  //게시글 작성자 찾기
+  findAuthor = async (postId) => {
+    return await this.postsRepository.findAuthor(postId);
+  };
 
-    if (findPost.userId == Users.userId) {
-      await this.postRepository.updatePost({ postId, postContent, image });
-      return;
-    }
+  // 게시글 수정
+  updatePost = async (postId, postContent) => {
+    console.log(postId, postContent)
+    return await this.postsRepository.updatePost(postId, postContent);
   };
 
   // 게시글 삭제
-  deletePosts = async (postId, Users) => {
-    const findPost = await this.postRepository.findOnePost(postId);
-
-    if (findPost.userId == Users.userId) {
-      await this.postRepository.deletePost(postId);
+  deletePosts = async (postId, userId) => {
+    console.log(postId, Users)
+    const findPost = await this.postsRepository.findOnePost(postId);
+    console.log(findPost.userId , userId)
+    if (findPost.userId == userId) {
+      await this.postsRepository.deletePost(postId);
       return;
     }
   };
 
   // 게시글 좋아요
-  // likeEvent = async () => {};
+  likeEvent = async (postId, userId, isLiked) => {
+    const postlike = await this.postsRepository.findLike(postId, userId);
+    if (postlike) {
+      if (postlike.isLiked === isLiked) {
+        return await this.postsRepository.deleteLike(postlike.likeId);
+      }
+      return await this.postsRepository.updateLike(postlike.likeId, isLiked);
+    }
+    return await this.postsRepository.createLike(postId, userId, isLiked);
+  };
+
+  // likeEvent = async (postId, userId, isLiked) => {
+  //   const postlike = await this.postsRepository.findLike({postId, userId});
+  //   if (!postlike) {
+  //     await this.postsRepository.createLike(postId, userId);
+  //     return {msg : "좋아요를 누르셨습니다."}
+  //   } else {
+  //     await this.postsRepository.deleteLike(postId, userId);
+  //     return {msg : "좋아요를 취소하셨습니다."}
+  //   }
+  // };
 }
 
 module.exports = PostsService;

@@ -23,6 +23,9 @@ module.exports = {
       imageUrl: {
         type: Sequelize.STRING,
       },
+      isLiked: {
+        type: Sequelize.BOOLEAN,
+      },
       place: {
         type: Sequelize.STRING,
       },
