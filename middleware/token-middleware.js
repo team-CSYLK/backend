@@ -12,7 +12,7 @@ function verifyToken(access_token) {
 module.exports = async (req, res, next) => {
   const access_token = req.header('Authorization');
 
-  console.log(access_token);
+  // console.log(access_token);
 
   if (!access_token) throw new Unauthorized('');
 
@@ -26,7 +26,7 @@ module.exports = async (req, res, next) => {
   //* token을 검증 해서 분기처리를 해줘야함.
   const validateAcessToken = verifyToken(authToken);
 
-  console.log(decodedAccessToken);
+  // console.log(decodedAccessToken);
 
   if (validateAcessToken) {
     //* 분기 1. token의 검증에 성공했을경우.

@@ -8,11 +8,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
       });
 
-      this.hasMany(models.PostImages, {
-        sourceKey: 'postId',
-        foreignKey: 'postId',
-      });
-
       this.hasOne(models.Likes, {
         sourceKey: 'postId',
         foreignKey: 'postId',
@@ -29,18 +24,23 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       userId: {
-        allowNull: false,
         type: DataTypes.INTEGER,
       },
 
       postContent: {
-        allowNull: false,
+        type: DataTypes.STRING,
+      },
+
+      imageUrl: {
         type: DataTypes.STRING,
       },
 
       place: {
-        allowNull: false,
         type: DataTypes.STRING,
+      },
+
+      isLiked: {
+        type: DataTypes.BOOLEAN,
       },
 
       createdAt: {

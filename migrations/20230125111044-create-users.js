@@ -18,6 +18,10 @@ module.exports = {
       nickname: {
         type: Sequelize.STRING,
       },
+      password: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       snsId: {
         type: Sequelize.STRING,
       },
