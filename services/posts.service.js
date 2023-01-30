@@ -5,22 +5,14 @@ class PostsService {
   postsRepository = new PostRepository();
 
   // 게시글 작성
-  // images = req.files
+
   createPost = async (imageUrl, userId, postContent) => {
-
-    // const imageObject = images[0].transforms;
-    // const result = imageObject.map((image) => {
-    //   return {
-    //     images: image.location,
-    //   };
-    // });
-    // const imageUrl = result;
-
-
+    const place = '강동구';
     const createPostData = await this.postsRepository.createPost(
       imageUrl,
       userId,
-      postContent
+      postContent,
+      place
     );
     return createPostData;
   };
@@ -38,7 +30,7 @@ class PostsService {
         postId: posts.postId,
         userId: posts.userId,
         postContent: posts.postContent,
-        image: posts.image,
+        image: posts.imageUrl,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
         // isLiked: posts.isLiked,

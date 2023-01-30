@@ -1,11 +1,13 @@
 const UsersService = require('../services/users.service');
 const joi = require('../util/joi');
 const bcrypt = require('bcrypt');
+const axios = require('axios');
+const jwt = require('jsonwebtoken');
 const {
   InvalidParamsError,
   ValidationError,
-} = require("../exceptions/index.exception");
-require("dotenv").config();
+} = require('../exceptions/index.exception');
+require('dotenv').config();
 
 class UsersController {
   usersService = new UsersService();
@@ -20,9 +22,14 @@ class UsersController {
       throw error;
     }
 
-    await this.usersService.createNickname(nickname, userId);
+    const newNickname = await this.usersService.createNickname(
+      nickname,
+      userId
+    );
 
-    res.sendStatus(201);
+    res
+      .status(201)
+      .json({ statusCode: 201, message: '닉네임이 변경되었습니다' });
   };
 
   userProfile = async (req, res) => {
@@ -33,57 +40,63 @@ class UsersController {
     res.status(201).json({ statusCode: 201, data: profile });
   };
 
-  /**회원가입 컨트롤러 */
-  signup = async (req, res, next) => {
+  userKakao = async (req, res) => {
     try {
-      const { email, name, nickname, password } =
-        await joi.signupSchema.validateAsync(req.body);
-
-      if (!email || !name || !nickname || !password) {
-        throw new InvalidParamsError('입력란을 확인해 주세요');
-      }
-
-      if (password.includes(nickname) || nickname.includes(password))
-        throw new ValidationError('패스워드에 닉네임이 포함될수 없습니다.');
-
-      // 비밀번호 hash
-      const hashed = await bcrypt.hash(password, 12);
-      const users = await Object.create({
-        email: email,
-        name: name,
-        nickname: nickname,
-        password: hashed,
+      const { code } = req.body;
+      const baseUrl = 'https://kauth.kakao.com/oauth/token';
+      const config = {
+        client_id: process.env.KAKAO_CLIENT_ID,
+        grant_type: 'authorization_code',
+        redirect_uri: process.env.KAKAO_CALLBACK,
+        code: code,
+      };
+      const params = new URLSearchParams(config).toString();
+      const finalUrl = `${baseUrl}?${params}`;
+      const kakaoTokenRequest = await fetch(finalUrl, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json', // 이 부분을 명시하지않으면 text로 응답을 받게됨
+        },
       });
+      const json = await kakaoTokenRequest.json();
+      const access_Token = await json.access_token;
 
-      // hash된 유저 정보를 service로 전달
-      // 서비스 계층에 구현된 createUser 로직을 실행합니다.
-      await this.usersService.createUser(users);
-      res.status(201).json({ ok: true, message: '회원가입 성공.' });
-    } catch (error) {
-      next(error);
-    }
-  };
+      let user = await axios({
+        method: 'get',
+        url: 'https://kapi.kakao.com/v2/user/me',
+        headers: {
+          Authorization: `Bearer ${access_Token}`,
+        }, //헤더에 내용을 보고 보내주겠다.
+      });
+      const email = user.data.kakao_account.email;
+      const name = user.data.properties.nickname;
+      const imageProfile = user.data.properties.profile_image;
+      const snsId = user.data.id;
+      const provider = 'kakao';
 
-  /**로그인 컨트롤러 */
-  login = async (req, res, next) => {
-    try {
-      const { email, password } = await joi.loginSchema.validateAsync(req.body);
-      // console.log(email, password);
-      if (!email || !password) {
-        throw new InvalidParamsError('입력란을 확인해주세요');
+      const userData = await this.usersService.userCheck(
+        email,
+        name,
+        imageProfile,
+        snsId,
+        provider
+      );
+
+      if (userData) {
+        const accessToken = jwt.sign(
+          { userId: userData.userId },
+          process.env.SECRETKEY,
+          {
+            expiresIn: '1d',
+          }
+        );
+
+        res.header('nickname', userData.nickname);
+        res.header('Authorization', `Bearer ${accessToken}`);
+        res.send(`nickname : ${userData.nickname}`); // 프론트엔드에 닉네임
       }
-
-      const { accessToken, refreshToken, userId } =
-        await this.usersService.verifyUser(email, password);
-      /**쿠키에 Token전송 */
-      res.cookie('refreshToken', refreshToken);
-      res.cookie('accessToken', accessToken);
-
-      return res
-        .status(200)
-        .json({ accessToken, refreshToken, userId, message: '로그인 성공.' });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      throw err.message;
     }
   };
 }

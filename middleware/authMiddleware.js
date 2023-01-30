@@ -11,7 +11,7 @@ module.exports = async (req, res, next) => {
 
     if (!accesstoken || !refreshtoken) {
       return res.status(403).send({
-        errorMessage: '로그인이 필요한 기능입니다.',
+        errorMessage: '로그인이 필요한 기능입니다..',
       });
     }
 

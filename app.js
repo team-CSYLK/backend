@@ -1,25 +1,31 @@
+//https버젼으로 배포용
 require('dotenv').config();
 const express = require('express');
 const cookieParesr = require('cookie-parser');
 const indexRouter = require('./routes');
 const cors = require('cors');
+const http = require('http');
+const http2 = require('http2');
+const fs = require('fs');
+const http2Express = require('http2-express-bridge');
 
-const app = express();
+const app = http2Express(express);
+// const app = express();
 const port = process.env.PORT || 3000;
+const http2Port = process.env.HTTP2_PORT || 4000;
 
 app.use(express.json());
 app.use(cookieParesr());
+app.use(express.static('public'));
 
-//세션 세팅
-const configureSession = require('./config/session');
-configureSession(app);
+//* http2 설정을 위한 Option 설정 (배포시에만 열어)
+// const options = {
+//   ca: fs.readFileSync('/etc/letsencrypt/live/becool0514.shop/fullchain.pem'),
+//   key: fs.readFileSync('/etc/letsencrypt/live/becool0514.shop/privkey.pem'),
+//   cert: fs.readFileSync('/etc/letsencrypt/live/becool0514.shop/cert.pem'),
+//   allowHTTP1: true,
+// };
 
-//패스포트 새팅
-const passport = require('passport');
-const configurePassport = require('./config/passport')(app);
-configurePassport(passport);
-
-app.use('/', indexRouter);
 //임시 소셜 로그인 버튼
 app.get('/', (req, res) => {
   /**
@@ -45,14 +51,24 @@ app.get('/', (req, res) => {
   }
 });
 
-//* CORS 설정.
-app.use(
-  cors({
-    exposedHeaders: ['Authorization', 'nickname'],
-    credential: 'true',
-  })
-);
+// const corsOption = {
+//   origin: '*',
+//   exposedHeaders: ['Authorization', 'nickname'],
+//   credentials: true,
+// };
+
+//* CORS 설정.(배포시에만 열어)
+// app.use(cors(corsOption));
+
+app.use('/', indexRouter);
 
 app.listen(port, () => {
   console.log(port, '포트로 서버가 열렸어요!');
 });
+
+//(배포시에만 열어)
+// http.createServer(app).listen(port);
+
+// http2.createSecureServer(options, app).listen(http2Port, () => {});
+
+//서버에서 확인용
