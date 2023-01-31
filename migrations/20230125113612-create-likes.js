@@ -10,7 +10,6 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       postId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'Posts',
@@ -18,16 +17,11 @@ module.exports = {
         },
       },
       userId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'Users',
           key: 'userId',
         },
-      },
-      isLiked: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,

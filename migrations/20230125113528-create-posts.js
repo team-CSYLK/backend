@@ -20,11 +20,12 @@ module.exports = {
       postContent: {
         type: Sequelize.STRING,
       },
+      likes: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       imageUrl: {
         type: Sequelize.STRING,
-      },
-      isLiked: {
-        type: Sequelize.BOOLEAN,
       },
       place: {
         type: Sequelize.STRING,

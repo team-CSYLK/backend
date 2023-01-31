@@ -19,16 +19,16 @@ class PostsRepository {
         {
           model: Users,
         },
+        {
+          model: Likes,
+        },
         // {
-        //   model: Likes,
+        //   model: Comments,
+        //   include: [
+        //     { model: Users },
+        //     { model: Likes, where: { userId: userId }, required: false },
+        //   ],
         // },
-      //   {
-      //     model: Comments,
-      //     include: [
-      //       { model: Users },
-      //       { model: Likes, where: { userId: userId }, required: false },
-      //     ],
-      //   },
       ],
     });
     // console.log(postsOne);
@@ -65,30 +65,50 @@ class PostsRepository {
     const createPost = await Posts.create({
       imageUrl,
       userId,
-      postContent
+      postContent,
+      likes:0,
     });
     return createPost;
   };
 
-  //게시글 좋아요
-  findLike = async (postId, userId) => {
-    const findLike =  await Likes.findOne({where: {postId, userId}});
+  //*좋아요 데이터 찾기
+  findLike = async ({ userId, postId }) => {
+    const findLike = await Likes.findOne({ where: { userId, postId } });
     return findLike;
-  }
+  };
+  //*좋아요 만들기
+  createLike = async ({ userId, postId }) => {
+    const createLike = await Likes.create({ userId, postId });
+    return createLike;
+  };
+  //*좋아요 취소
+  destroyLike = async ({ userId, postId }) => {
+    const destroyLike = await Likes.destroy({ where: { userId, postId } });
+    return destroyLike;
+  };
+  //*좋아요 on
+  upLike = async ({ postId }) => {
+    const upLike = await Posts.increment(
+      { likes: 1 },
+      { where: { postId } }
+    );
+    return upLike;
+  };
+  //*좋아요off
+  downLike = async ({ postId }) => {
+    const downLike = await Posts.increment(
+      { likes: -1 },
+      { where: { postId } }
+    );
+    return downLike;
+  };
+  //*좋아요 count 가져오기
+  likeCount = async ({ postId }) => {
+    const likeCount = await Posts.findOne({ where: { postId } });
+    return likeCount;
+  };
 
-  deleteLike = async (postId, userId) => {
-    const deleteLike = await Likes.delete({where: {postId, userId}});
-    return deleteLike;
-  }
 
-  updateLike = async (postId) => {
-    
-  }
-
-  createLike = async (postId, userId) => {
-    const createLike = await Likes.create({userId, postId});
-    return createLike;    
-  }
 }
 
 module.exports = PostsRepository;

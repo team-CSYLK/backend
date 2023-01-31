@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
+      likes: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+
       imageUrl: {
         type: DataTypes.STRING,
       },
@@ -38,11 +43,7 @@ module.exports = (sequelize, DataTypes) => {
       place: {
         type: DataTypes.STRING,
       },
-
-      isLiked: {
-        type: DataTypes.BOOLEAN,
-      },
-
+      
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,

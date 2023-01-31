@@ -17,6 +17,6 @@ router.delete('/:postId', authMiddleware, postsController.deletePost);
 // post 상세 조회
 router.get('/:postId', authMiddleware, postsController.detailPost);
 //post 좋아요
-router.put('/like/:postId', postsController.likePost);
+router.put('/like/:postId', authMiddleware, postsController.liketoggle);
 
 module.exports = router;
