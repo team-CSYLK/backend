@@ -9,12 +9,8 @@ class CommentService {
 
   //*댓글작성
   createComment = async (commentContent, postId, userId) => {
-    console.log(commentContent, postId, userId);
-    const createComment = await this.commentsRepository.createComment({
-      commentContent,
-      postId,
-      userId,
-    });
+    const exPost = await this.commentsRepository.findPost(postId);
+
     try {
       if (!commentContent) {
         error.status = 412;
@@ -23,7 +19,7 @@ class CommentService {
           errorMessage: '댓글 내용을 입력해주세요.',
         };
         throw error;
-      } else if (!postId) {
+      } else if (!exPost) {
         error.status = 404;
         error.message = {
           statusCode: 404,
@@ -31,6 +27,12 @@ class CommentService {
         };
         throw error;
       }
+
+      await this.commentsRepository.createComment(
+        commentContent,
+        postId,
+        userId
+      );
 
       success.status = 201;
       success.message = {
@@ -44,33 +46,73 @@ class CommentService {
   };
 
   //*댓글 수정
-  updateComment = async ({ userId, commentContent, commentId }) => {
-    const findComment = await this.commentsRepository.findOneComment({
-      commentId,
-    });
-    console.log(findComment);
-    if (!findComment) {
-      throw new ValidationError('잘못된 요청입니다.');
+  updateComment = async (commentId, commentContent, userId) => {
+    const findComment = await this.commentsRepository.findOneComment(commentId);
+    console.log(userId, findComment.userId);
+
+    try {
+      if (!findComment) {
+        error.status = 404;
+        error.message = {
+          statusCode: 404,
+          errorMessage: '해당 댓글이 존재하지 않습니다',
+        };
+        throw error;
+      } else if (findComment.userId !== Number(userId)) {
+        error.status = 403;
+        error.message = {
+          statusCode: 403,
+          errorMessage: '수정권한이 없습니다.',
+        };
+        throw error;
+      } else {
+        await this.commentsRepository.updateComment(
+          commentId,
+          commentContent,
+          userId
+        );
+      }
+
+      success.status = 201;
+      success.message = {
+        statusCode: 201,
+        message: '댓글 수정에 성공했습니다.',
+      };
+      return success;
+    } catch (error) {
+      return error;
     }
-    if (findComment.userId === userId)
-      return await this.commentsRepository.updateComment({
-        userId,
-        commentContent,
-        commentId: 1,
-      });
   };
 
   //*댓글 삭제
-  deleteComment = async ({ commentId, userId }) => {
-    const findOneComment = await this.commentsRepository.findOneComment({
-      commentId,
-    });
+  deleteComment = async (commentId, userId) => {
+    const findOneComment = await this.commentsRepository.findOneComment(
+      commentId
+    );
     if (!findOneComment) {
-      throw new ValidationError('잘못된 요청입니다.');
+      error.status = 404;
+      error.message = {
+        statusCode: 404,
+        errorMessage: '해당 댓글이 존재하지 않습니다',
+      };
+      throw error;
+    } else if (findOneComment.userId !== userId) {
+      error.status = 403;
+      error.message = {
+        statusCode: 403,
+        errorMessage: '삭제 권한이 없습니다',
+      };
+      throw error;
     }
-    if (findOneComment.userId === userId) {
-      return await this.commentsRepository.deleteComment({ commentId });
-    }
+
+    await this.commentsRepository.deleteComment(commentId);
+
+    success.status = 200;
+    success.message = {
+      statusCode: 200,
+      message: '댓글 삭제에 성공했습니다.',
+    };
+    return success;
   };
 }
 module.exports = CommentService;

@@ -14,7 +14,7 @@ router.get('/editProfile', tokenMiddleware, usersController.getUserProfile);
 router.put(
   '/editProfileImage',
   tokenMiddleware,
-  userUpload.array('image', 1),
+  userUpload.array('imageProfile', 1),
   usersController.setUserProfile
 );
 

@@ -148,7 +148,7 @@ class UsersService {
           name: userData.name,
           nickname: userData.nickname,
           introduce: userData.introduce,
-          imageUrl: userData.imageProfile,
+          imageProfile: userData.imageProfile,
         },
       };
       return success;
@@ -157,7 +157,7 @@ class UsersService {
     }
   };
 
-  setUserProfile = async (userId, name, nickname, introduce, imageUrl) => {
+  setUserProfile = async (userId, name, nickname, introduce, imageProfile) => {
     const checkNickname = /^[a-zA-Z0-9]{3,}$/;
     const checkedNickname = checkNickname.test(nickname);
     const nicknameExist = await this.usersRepository.findNick(nickname);
@@ -184,7 +184,7 @@ class UsersService {
         name,
         nickname,
         introduce,
-        imageUrl
+        imageProfile
       );
 
       const userData = await this.usersRepository.findUser(userId);
@@ -205,7 +205,7 @@ class UsersService {
           name: userData.name,
           nickname: userData.nickname,
           introduce: userData.introduce,
-          imageUrl: userData.imageProfile,
+          imageProfile: userData.imageProfile,
         },
       };
       return success;

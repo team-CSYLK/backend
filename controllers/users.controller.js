@@ -109,14 +109,14 @@ class UsersController {
   setUserProfile = async (req, res) => {
     const userId = res.locals.userId;
     const { name, nickname, introduce } = req.body;
-    const imageUrl = req.files[0].transforms[0].location;
+    const imageProfile = req.files[0].transforms[0].location;
 
     const setData = await this.usersService.setUserProfile(
       userId,
       name,
       nickname,
       introduce,
-      imageUrl
+      imageProfile
     );
 
     res.status(setData.status || 400).json(setData.message);

@@ -5,11 +5,10 @@ class PostsRepository {
   // 게시글 전체 조회
   findAllPost = async (userId) => {
     const [allPost, metadata] = await sequelize.query(
-      `SELECT p.postId, p.userId,  l.userId as likeUserId, u.nickname, u.imageProfile, p.imageUrl,  p.postContent, p.likes, p.place, p.createdAt  
+      `SELECT  p.postId, p.userId,  l.userId as likeUserId, u.userId as realUserId, u.nickname, u.imageProfile, p.imageUrl ,p.postContent, p.likes, p.place, p.createdAt  
       FROM Posts p 
-      left join Likes l on p.postId =l.postId 
       left join Users u on p.userId = u.userId
-      WHERE ISNULL(l.userId) or l.userId =${userId}`
+      left join Likes l on p.postId = l.postId and l.userId = ${userId}`
     );
 
     return allPost;
@@ -55,13 +54,14 @@ class PostsRepository {
   };
 
   // 게시글 수정
-  updatePost = async (postId, postContent, imageUrl) => {
-    await Posts.update({ postContent, imageUrl }, { where: { postId } });
+  updatePost = async (postId, postContent, imageUrl, place) => {
+    await Posts.update({ postContent, imageUrl, place }, { where: { postId } });
     return;
   };
 
   //게시글 삭제
   deletePost = async (postId) => {
+    console.log(postId);
     const deletePost = Posts.destroy({
       where: { postId },
     });

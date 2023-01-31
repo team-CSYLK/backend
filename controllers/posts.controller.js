@@ -6,7 +6,7 @@ class PostsController {
   postsService = new PostsService();
 
   // 게시글 작성 v
-  createPosts = async (req, res, next) => {
+  createPosts = async (req, res) => {
     const { postContent, place } = req.body;
     const userId = res.locals.userId;
 
@@ -41,13 +41,16 @@ class PostsController {
   // 게시글 수정 v
   updatePost = async (req, res) => {
     const { postId } = req.params;
-    const { postContent } = req.body;
+    const { postContent, place } = req.body;
+    const userId = res.locals.userId;
     const imageUrl = req.files[0].transforms[0].location;
 
     const updated = await this.postsService.updatePost(
       postId,
       postContent,
-      imageUrl
+      userId,
+      imageUrl,
+      place
     );
 
     return res.status(updated.status || 400).json(updated.message);

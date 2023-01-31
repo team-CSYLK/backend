@@ -63,9 +63,9 @@ class UsersRepository {
     return await Refereshtoken.create({ refreshToken, userId });
   };
 
-  setUserProfile = async (userId, name, nickname, introduce, imageUrl) => {
+  setUserProfile = async (userId, name, nickname, introduce, imageProfile) => {
     await Users.update(
-      { name, nickname, introduce, imageProfile: imageUrl },
+      { name, nickname, introduce, imageProfile },
       { where: { userId } }
     );
 

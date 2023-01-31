@@ -12,7 +12,7 @@ class PostsService {
   // 게시글 작성
   createPost = async (imageUrl, userId, postContent, place) => {
     try {
-      if (!imageUrl || !postContent) {
+      if (!imageUrl || !postContent || !place) {
         error.status = 412;
         error.message = {
           statusCode: 412,
@@ -52,7 +52,7 @@ class PostsService {
           imageUrl: post.imageUrl,
           postContent: post.postContent,
           likes: post.likes,
-          isLiked: userId !== post.likeUserId ? false : true,
+          isLiked: userId === post.likeUserId ? true : false,
           place: post.place,
           createdAt: post.createdAt,
         };
@@ -105,7 +105,7 @@ class PostsService {
   };
 
   // 게시글 수정
-  updatePost = async (postId, postContent, imageUrl) => {
+  updatePost = async (postId, postContent, userId, imageUrl, place) => {
     try {
       if (!postContent) {
         error.status = 412;
@@ -119,6 +119,20 @@ class PostsService {
       const findPost = await this.postsRepository.findAuthor(postId);
       const findkey = findPost.imageUrl.split('/')[4];
       const keyinfo = `posts-image/${findkey}`;
+
+      if (!findPost) {
+        error.status = 404;
+        error.message = {
+          statusCode: 404,
+          errorMessage: '해당 게시글이 존재하지 않습니다.',
+        };
+      } else if (userId !== findPost.userId) {
+        error.status = 403;
+        error.message = {
+          statusCode: 403,
+          errorMessage: '수정 권한이 없습니다..',
+        };
+      }
 
       const s3 = new aws.S3({
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -142,11 +156,16 @@ class PostsService {
         }
       });
 
-      await this.postsRepository.updatePost(postId, postContent, imageUrl);
+      await this.postsRepository.updatePost(
+        postId,
+        postContent,
+        imageUrl,
+        place
+      );
 
-      success.status = 200;
+      success.status = 201;
       success.message = {
-        statusCode: 200,
+        statusCode: 201,
         message: '게시글 수정에 성공했습니다.',
       };
       return success;
@@ -158,7 +177,15 @@ class PostsService {
   // 게시글 삭제
   deletePosts = async (postId, userId) => {
     const findPost = await this.postsRepository.findOnePost(postId);
-    if (findPost.userId !== userId) {
+
+    if (!findPost) {
+      error.status = 404;
+      error.message = {
+        statusCode: 404,
+        errorMessage: '댓글이 존재하지 않습니다.',
+      };
+      throw error;
+    } else if (findPost.userId !== userId) {
       error.status = 403;
       error.message = {
         statusCode: 403,
@@ -176,13 +203,11 @@ class PostsService {
   };
   //*좋아요 찾기
   findLike = async ({ userId, postId }) => {
-    console.log(userId, postId);
     const like = await this.postsRepository.findLike({ userId, postId });
     return like;
   };
   //*좋아요
   createLike = async ({ userId, postId }) => {
-    console.log(userId, postId);
     const like = await this.postsRepository.findLike({ userId, postId });
     if (!like) {
       await this.postsRepository.createLike({ userId, postId });
@@ -197,7 +222,6 @@ class PostsService {
   };
   //*좋아요 취소
   destroyLike = async ({ userId, postId }) => {
-    console.log(userId, postId);
     const like = await this.postsRepository.findLike({ userId, postId });
     if (like) {
       await this.postsRepository.destroyLike({ userId, postId });
@@ -212,7 +236,6 @@ class PostsService {
   };
   //*좋아요 카운트
   likeCount = async ({ postId }) => {
-    console.log(postId);
     let likeCount = await this.postsRepository.likeCount({ postId });
     likeCount = likeCount.likes;
     return likeCount;
