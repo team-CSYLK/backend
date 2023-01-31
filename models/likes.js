@@ -23,16 +23,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       postId: {
-        allowNull: false,
         type: DataTypes.INTEGER,
       },
       userId: {
-        allowNull: false,
         type: DataTypes.INTEGER,
-      },
-      isLiked: {
-        allowNull: false,
-        type: DataTypes.BOOLEAN,
       },
       createdAt: {
         allowNull: false,

@@ -4,13 +4,13 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Posts', {
       postId: {
-        allowNull: false,
+        // allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
       userId: {
-        allowNull: false,
+        // allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: 'Users',
@@ -20,21 +20,22 @@ module.exports = {
       postContent: {
         type: Sequelize.STRING,
       },
+      likes: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       imageUrl: {
         type: Sequelize.STRING,
-      },
-      isLiked: {
-        type: Sequelize.BOOLEAN,
       },
       place: {
         type: Sequelize.STRING,
       },
       createdAt: {
-        allowNull: false,
+        // allowNull: false,
         type: Sequelize.DATE,
       },
       updatedAt: {
-        allowNull: false,
+        // allowNull: false,
         type: Sequelize.DATE,
       },
     });

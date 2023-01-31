@@ -1,5 +1,7 @@
 require('dotenv').config();
 const PostsService = require('../services/posts.service');
+const InvalidParamsError = require('../exceptions/index.exception');
+const {Posts , Likes} = require('../models');
 const aws = require('aws-sdk');
 
 class PostsController {
@@ -105,17 +107,36 @@ class PostsController {
   };
 
   //게시글 좋아요 v
-  likePost = async (req, res) => {
+  liketoggle = async (req, res, next) => {
     try {
-      const { postId } = req.params;
       const { userId } = res.locals.user;
-      const { isLiked } = req.body;
-      await this.postsService.likeEvent(postId, userId, isLiked);
-      return res.sendStatus(204);
+      const { postId } = req.params;
+      if (!userId || !postId) {
+        throw new InvalidParamsError("잘못된 요청입니다.");
+      }
+      const findLike = await this.postsService.findLike({ userId, postId });
+      if (!findLike) {
+        const createLike = await this.postsService.createLike({
+          userId,
+          postId,
+        });
+        const likeCount = await this.postsService.likeCount({ postId });
+        return res
+          .status(201)
+          .json({ createLike, data: likeCount, msg: "좋아요 등록완료" });
+      }
+      if (findLike) {
+        const destroyLike = await this.postsService.destroyLike({
+          userId,
+          postId,
+        });
+        const likeCount = await this.postsService.likeCount({ postId });
+        return res
+          .status(200)
+          .json({ destroyLike, data: likeCount, msg: "좋아요 등록취소" });
+      }
     } catch (error) {
-      return res
-        .status(error.status || 400)
-        .send({ ok: false, message: error.message });
+      next(error);
     }
   };
 }

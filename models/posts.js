@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   Posts.init(
     {
       postId: {
-        allowNull: false,
+        // allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
+      likes: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+
       imageUrl: {
         type: DataTypes.STRING,
       },
@@ -39,16 +44,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      isLiked: {
-        type: DataTypes.BOOLEAN,
-      },
-
       createdAt: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.DATE,
       },
       updatedAt: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.DATE,
       },
     },
