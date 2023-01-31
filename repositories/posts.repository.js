@@ -1,5 +1,4 @@
 const { Users, Posts, Comments, Likes } = require('../models');
-const user = require('../models/users');
 
 class PostsRepository {
   // 게시글 전체 조회
@@ -61,12 +60,16 @@ class PostsRepository {
   };
 
   //게시글 업로드
-  createPost = async (imageUrl, userId, postContent) => {
+  createPost = async (imageUrl, userId, postContent, place) => {
     const createPost = await Posts.create({
       imageUrl,
       userId,
       postContent,
+<<<<<<< HEAD
       likes:0,
+=======
+      place,
+>>>>>>> 87352ba8c86b452df9f35fabbf3f4d206e8f161e
     });
     return createPost;
   };

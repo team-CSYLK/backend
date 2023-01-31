@@ -1,5 +1,4 @@
-const { Users } = require('../models');
-
+const { Users, Posts } = require('../models');
 class UsersRepository {
   findUser = async (userId) => {
     const user = await Users.findByPk(userId);
@@ -8,12 +7,18 @@ class UsersRepository {
   };
 
   findNick = async (nickname) => {
-    // console.log(nickname);
     const nicknameEx = await Users.findOne({ where: { nickname } });
-
-    // console.log(nicknameEx);
+    console.log(nicknameEx);
 
     return nicknameEx;
+  };
+
+  findByuserId = async (userId) => {
+    const posts = await Posts.findAll({ where: { userId } });
+
+    console.log(posts);
+
+    return posts;
   };
 
   createNickname = async (nickname, userId) => {
@@ -32,16 +37,6 @@ class UsersRepository {
     return;
   };
 
-  findUser = async (email, password) => {
-    const user = await User.findOne({
-      where: {
-        [Op.and]: [{ email }, { password }],
-      },
-    });
-
-    return user;
-  };
-
   findByEmail = async (email) => {
     const user = await Users.findOne({
       where: {
@@ -51,5 +46,21 @@ class UsersRepository {
     return user;
   };
 
+  findKakaoUser = async (snsId) => {
+    const exUser = await Users.findOne({ where: { snsId } });
+
+    return exUser;
+  };
+
+  createKakaoUser = async (email, name, imageProfile, snsId, provider) => {
+    const newUser = await Users.create({
+      email: email,
+      name: name,
+      imageProfile: imageProfile,
+      snsId: snsId,
+      provider: provider,
+    });
+    return newUser;
+  };
 }
 module.exports = UsersRepository;

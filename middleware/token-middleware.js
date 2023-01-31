@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { Unauthorized } = require('../exceptions/index.exception');
 const jwt = require('jsonwebtoken');
 
 function verifyToken(access_token) {
@@ -10,31 +11,26 @@ function verifyToken(access_token) {
 }
 
 module.exports = async (req, res, next) => {
+  //헤더에 있는 엑세스 토큰 받아오기
   const access_token = req.header('Authorization');
-
-  // console.log(access_token);
-
+  //엑세스 토근 없을 시에 에러 처리
   if (!access_token) throw new Unauthorized('');
 
+  //엑세스 토큰만 뽑아내고 디코딩작업 및 verify 작업
   const authToken = access_token.split(' ')[1];
   const decodedAccessToken = jwt.decode(authToken);
-  //* Client 에서 access_token 과 함께. API 요청이 들어옴.
-  //* token이 들어오지 않을경우.
-  //* 에러처리.
-
-  //* token이 들어온경우.
-  //* token을 검증 해서 분기처리를 해줘야함.
   const validateAcessToken = verifyToken(authToken);
 
-  // console.log(decodedAccessToken);
+  console.log('데헷' + authToken);
 
+  console.log('데헷' + validateAcessToken);
+
+  console.log('데헷' + decodedAccessToken);
+  //검증 후 userId 뽑아내서 다음 작업으로 이동
   if (validateAcessToken) {
-    //* 분기 1. token의 검증에 성공했을경우.
-    //* next()를 이용하여 API 비지니스 로직으로 이동.
-    //* 분기 1 끝.
     res.locals.userId = decodedAccessToken.userId;
     next();
-    return;
+    console.log('데헷');
   }
   //* 분기 2. token의 검증에 실패 했을경우.
 

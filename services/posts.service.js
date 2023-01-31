@@ -6,11 +6,18 @@ class PostsService {
   postsRepository = new PostsRepository();
 
   // 게시글 작성
+<<<<<<< HEAD
   createPost = async (imageUrl, userId, postContent) => {
+=======
+
+  createPost = async (imageUrl, userId, postContent) => {
+    const place = '강동구';
+>>>>>>> 87352ba8c86b452df9f35fabbf3f4d206e8f161e
     const createPostData = await this.postsRepository.createPost(
       imageUrl,
       userId,
-      postContent
+      postContent,
+      place
     );
     return createPostData;
   };
@@ -26,7 +33,7 @@ class PostsService {
         postId: posts.postId,
         userId: posts.userId,
         postContent: posts.postContent,
-        imageUrl: posts.imageUrl,
+        image: posts.imageUrl,
         createdAt: posts.createdAt,
         updatedAt: posts.updatedAt,
       };
@@ -46,15 +53,21 @@ class PostsService {
 
   // 게시글 수정
   updatePost = async (postId, postContent) => {
-    console.log(postId, postContent)
+    console.log(postId, postContent);
     return await this.postsRepository.updatePost(postId, postContent);
   };
 
   // 게시글 삭제
   deletePosts = async (postId, userId) => {
+<<<<<<< HEAD
     // console.log(postId, Users)
     const findPost = await this.postsRepository.findOnePost(postId);
     // console.log(findPost.userId , userId)
+=======
+    console.log(postId, Users);
+    const findPost = await this.postsRepository.findOnePost(postId);
+    console.log(findPost.userId, userId);
+>>>>>>> 87352ba8c86b452df9f35fabbf3f4d206e8f161e
     if (findPost.userId == userId) {
       await this.postsRepository.deletePost(postId);
       return;

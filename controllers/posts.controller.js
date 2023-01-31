@@ -10,13 +10,12 @@ class PostsController {
   // 게시글 작성 v
   createPosts = async (req, res, next) => {
     const { postContent } = req.body;
-    const { userId } = res.locals.user;
+    // const { userId } = res.locals.user;
+    const userId = res.locals.userId;
+
     try {
       const imageUrl = req.files[0].transforms[0].location;
 
-      console.log('애가 먼지 모르겠다?' , req.files[0].transforms[0].location)
-      
-      
       await this.postsService.createPost(imageUrl, userId, postContent);
       res.status(200).json({ msg: '이미지 업로드 완료!', postimg: imageUrl });
     } catch (error) {
