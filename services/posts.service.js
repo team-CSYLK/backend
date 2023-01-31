@@ -1,4 +1,6 @@
 const PostsRepository = require('../repositories/posts.repository');
+require('dotenv').config();
+const aws = require('aws-sdk');
 
 const error = new Error();
 const success = {};
@@ -38,38 +40,26 @@ class PostsService {
 
   // 전체 게시글 조회
   findAllPost = async (userId) => {
-    const getAllPost = await this.postsRepository.findAllPost();
-    const allLike = await this.postsRepository.findAllLike(userId);
-    const allPost = [];
-    const result = [];
-
+    const getAllPost = await this.postsRepository.findAllPost(userId);
     try {
-      for (let i = 0; i < getAllPost.length; i++) {
-        allPost.push({
-          postId: getAllPost[i].postId,
-          userId: getAllPost[i].userId,
-          nickname: getAllPost[i].User.nickname,
-          imageProfile: getAllPost[i].User.imageProfile,
-          imageUrl: getAllPost[i].imageUrl,
-          postContent: getAllPost[i].postContent,
-          likes: getAllPost[i].likes,
-          isLiked: false,
-          createdAt: getAllPost[i].createdAt,
-        });
-      }
-
-      for (let i = 0; i < allPost.length; i++) {
-        for (let j = 0; j < allLike.length; j++) {
-          if (
-            allLike[j].userId === allPost[i].userId &&
-            allLike[j].postId === allPost[i].postId
-          )
-            allPost[i].isLiked = true;
-        }
-      }
+      console.log(getAllPost);
+      const data = getAllPost.map((post) => {
+        return {
+          postId: post.postId,
+          userId: post.userId,
+          nickname: post.nickname,
+          imageProfile: post.imageProfile,
+          imageUrl: post.imageUrl,
+          postContent: post.postContent,
+          likes: post.likes,
+          isLiked: userId !== post.likeUserId ? false : true,
+          place: post.place,
+          createdAt: post.createdAt,
+        };
+      });
 
       success.status = 200;
-      success.message = { statusCode: 200, data: allPost };
+      success.message = { statusCode: 200, data: data };
       return success;
     } catch (error) {
       return error;
@@ -115,7 +105,7 @@ class PostsService {
   };
 
   // 게시글 수정
-  updatePost = async (postId, postContent) => {
+  updatePost = async (postId, postContent, imageUrl) => {
     try {
       if (!postContent) {
         error.status = 412;
@@ -125,17 +115,44 @@ class PostsService {
         };
         throw error;
       }
+
+      const findPost = await this.postsRepository.findAuthor(postId);
+      const findkey = findPost.imageUrl.split('/')[4];
+      const keyinfo = `posts-image/${findkey}`;
+
+      const s3 = new aws.S3({
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION,
+      });
+
+      const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: keyinfo,
+      };
+
+      s3.deleteObject(params, function (err, data) {
+        if (err) {
+          error.status = 400;
+          error.message = {
+            statusCode: 400,
+            errorMessage: '삭제 및 수정에 실패했습니다.',
+          };
+        } else {
+        }
+      });
+
+      await this.postsRepository.updatePost(postId, postContent, imageUrl);
+
+      success.status = 200;
+      success.message = {
+        statusCode: 200,
+        message: '게시글 수정에 성공했습니다.',
+      };
+      return success;
     } catch (error) {
       return error;
     }
-    await this.postsRepository.updatePost(postId, postContent);
-
-    success.status = 200;
-    success.message = {
-      statusCode: 200,
-      message: '게시글 수정에 성공했습니다.',
-    };
-    return success;
   };
 
   // 게시글 삭제
@@ -171,7 +188,12 @@ class PostsService {
       await this.postsRepository.createLike({ userId, postId });
       await this.postsRepository.upLike({ postId });
     }
-    return like;
+    success.status = 201;
+    success.message = {
+      statusCode: 201,
+      message: '좋아요에 성공했습니다.',
+    };
+    return success;
   };
   //*좋아요 취소
   destroyLike = async ({ userId, postId }) => {
@@ -181,7 +203,12 @@ class PostsService {
       await this.postsRepository.destroyLike({ userId, postId });
       await this.postsRepository.downLike({ postId });
     }
-    return like;
+    success.status = 201;
+    success.message = {
+      statusCode: 201,
+      message: '좋아요를 취소했습니다.',
+    };
+    return success;
   };
   //*좋아요 카운트
   likeCount = async ({ postId }) => {
@@ -191,31 +218,5 @@ class PostsService {
     return likeCount;
   };
 }
-
-// 게시글 좋아요
-// likeEvent = async (postId, userId) => {
-//   console.log(userId)
-//   const postlike = await this.postsRepository.findLike(postId, userId);
-//   if (!postlike) {
-//     await this.postsRepository.createLike(postId, userId);
-//     await this.postsRepository.likecount(postId);
-//     return {msg : "좋아요를 누르셨습니다."}
-//   } else {
-//     await this.postsRepository.deleteLike(postId, userId);
-//     await this.postsRepository.likediscount(postId);
-//     return {msg : "좋아요를 취소하셨습니다."}
-//   }
-
-//     likeEvent = async (postId, userId, isLiked) => {
-//   const postlike = await this.postsRepository.findLike(postId, userId);
-//   if (postlike) {
-//     if (postlike.isLiked === isLiked) {
-//       return await this.postsRepository.deleteLike(postlike.likeId);
-//     }
-//     return await this.postsRepository.updateLike(postlike.likeId, isLiked);
-//   }
-//   return await this.postsRepository.createLike(postId, userId, isLiked);
-// };
-// };
 
 module.exports = PostsService;

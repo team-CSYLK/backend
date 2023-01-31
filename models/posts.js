@@ -42,6 +42,9 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0,
       },
 
+      isLiked: {
+        type: DataTypes.BOOLEAN,
+      },
       imageUrl: {
         type: DataTypes.STRING,
       },

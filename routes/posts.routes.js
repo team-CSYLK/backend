@@ -15,7 +15,12 @@ router.post(
 // post 조회
 router.get('/', tokenMiddleware, postsController.readPost);
 // post 수정
-router.put('/:postId', tokenMiddleware, postsController.updatePost);
+router.put(
+  '/:postId',
+  tokenMiddleware,
+  upload.array('imageUrl', 1),
+  postsController.updatePost
+);
 // post 삭제
 router.delete('/:postId', tokenMiddleware, postsController.deletePost);
 // post 상세 조회

@@ -24,6 +24,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 0,
       },
+      isLiked: {
+        type: Sequelize.BOOLEAN,
+      },
       imageUrl: {
         type: Sequelize.STRING,
       },

@@ -3,10 +3,14 @@ const { sequelize } = require('../models');
 
 class PostsRepository {
   // 게시글 전체 조회
-  findAllPost = async () => {
-    const allPost = await Posts.findAll({
-      include: [{ model: Users }],
-    });
+  findAllPost = async (userId) => {
+    const [allPost, metadata] = await sequelize.query(
+      `SELECT p.postId, p.userId,  l.userId as likeUserId, u.nickname, u.imageProfile, p.imageUrl,  p.postContent, p.likes, p.place, p.createdAt  
+      FROM Posts p 
+      left join Likes l on p.postId =l.postId 
+      left join Users u on p.userId = u.userId
+      WHERE ISNULL(l.userId) or l.userId =${userId}`
+    );
 
     return allPost;
   };
@@ -37,7 +41,7 @@ class PostsRepository {
   //댓글 찾기
   findAllComm = async (postId) => {
     const [comments, metadata] = await sequelize.query(
-      `SELECT  c.commentId, u.nickname ,u.imageProfile ,c.commentContent ,c.createdAt  
+      `SELECT  c.commentId, u.nickname ,u.imageProfile, c.commentContent ,c.createdAt  
       FROM Comments c left join Users u on c.userId = u.userId  
       where c.postId = ${postId}`
     );
@@ -51,8 +55,8 @@ class PostsRepository {
   };
 
   // 게시글 수정
-  updatePost = async (postId, postContent) => {
-    await Posts.update({ postContent }, { where: { postId } });
+  updatePost = async (postId, postContent, imageUrl) => {
+    await Posts.update({ postContent, imageUrl }, { where: { postId } });
     return;
   };
 
@@ -72,6 +76,7 @@ class PostsRepository {
       userId,
       postContent,
       place,
+      isLiked: false,
     });
     return createPost;
   };

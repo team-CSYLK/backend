@@ -40,16 +40,17 @@ class PostsController {
 
   // 게시글 수정 v
   updatePost = async (req, res) => {
-    try {
-      const { postId } = req.params;
-      const { postContent } = req.body;
-      await this.postsService.updatePost(postId, postContent);
-      res.sendStatus(201);
-    } catch (error) {
-      return res
-        .status(error.status || 400)
-        .send({ ok: false, message: error.message });
-    }
+    const { postId } = req.params;
+    const { postContent } = req.body;
+    const imageUrl = req.files[0].transforms[0].location;
+
+    const updated = await this.postsService.updatePost(
+      postId,
+      postContent,
+      imageUrl
+    );
+
+    return res.status(updated.status || 400).json(updated.message);
   };
 
   // 게시글 삭제 v
@@ -102,9 +103,7 @@ class PostsController {
           postId,
         });
         const likeCount = await this.postsService.likeCount({ postId });
-        return res
-          .status(201)
-          .json({ createLike, data: likeCount, msg: '좋아요 등록완료' });
+        return res.status(createLike.status || 400).json(createLike.message);
       }
       if (findLike) {
         const destroyLike = await this.postsService.destroyLike({
@@ -112,9 +111,7 @@ class PostsController {
           postId,
         });
         const likeCount = await this.postsService.likeCount({ postId });
-        return res
-          .status(200)
-          .json({ destroyLike, data: likeCount, msg: '좋아요 등록취소' });
+        return res.status(destroyLike.status || 400).json(destroyLike.message);
       }
     } catch (error) {
       next(error);
