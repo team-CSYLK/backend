@@ -13,9 +13,7 @@ module.exports = {
       .alphanum()
       .required()
       .error(
-        new ValidationError(
-          '이름은 최소 3자 이상으로 구성되어야 합니다.'
-        )
+        new ValidationError('이름은 최소 3자 이상으로 구성되어야 합니다.')
       ),
 
     nickname: Joi.string()

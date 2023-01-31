@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
   Posts.init(
     {
       postId: {
-        allowNull: false,
+        // allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -43,13 +43,13 @@ module.exports = (sequelize, DataTypes) => {
       place: {
         type: DataTypes.STRING,
       },
-      
+
       createdAt: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.DATE,
       },
       updatedAt: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.DATE,
       },
     },

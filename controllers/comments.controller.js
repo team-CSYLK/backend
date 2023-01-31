@@ -1,51 +1,64 @@
-const CommentService = require('../services/comments.service');
-
+const CommentsService = require('../services/comments.service');
+const InvalidParamsError = require('../exceptions/index.exception');
 class CommentsController {
-  commentService = new CommentService();
-
+  commentsService = new CommentsService();
+  /**댓글 작성 컨트롤러 */
   createComment = async (req, res, next) => {
-    // 선언 파트
-    const userId = 'temp_userId';
-    const { postId } = req.params;
-    const { commentContent } = req.body;
+    try {
+      const { commentContent } = req.body;
+      const { postId } = 1;
+      const { userId } = 1
 
-    // 구현 파트
-    const comment = await this.commentService.createComment(
-      userId,
-      postId,
-      commentContent
-    );
-    return res
-      .status(201)
-      .json({ statusCode: '201', message: '댓글 작성에 성공했습니다.' });
+      if (!commentContent) {
+        throw new InvalidParamsError('댓글 내용을 입력해주세요');
+      }
+      await this.commentsService.createComment({
+        commentContent,
+        postId,
+        userId,
+      });
+      res.status(201).json({ msg: '댓글을 작성하였습니다.' });
+    } catch (error) {
+      next(error);
+    }
   };
 
+  /**댓글 수정 컨트롤러 */
   updateComment = async (req, res, next) => {
-    // 선언 파트
-    const userId = 'temp_userId'; // todo - 토큰 작업 완료 시, userId PK 가져오는 것으로 수정할 것
-    const { commentId } = req.params;
-    const { commentContent } = req.body;
+    try {
+      const { commentId } = req.params;
+      const { commentContent } = req.body;
+      const { userId } = 1
 
-    // 구현 파트
-    const updateComment = await this.commentService.updateComment(
-      commentId,
-      commentContent
-    );
-    return res
-      .status(204)
-      .json({ statusCode: '204', message: '댓글 수정에 성공했습니다.' });
+      const editcomment = await this.commentsService.updateComment({
+        commentId,
+        commentContent,
+        userId,
+      });
+      res
+        .status(200)
+        .json({ data: editcomment, massage: '댓글을 수정하였습니다.' });
+    } catch (error) {
+      next(error);
+    }
   };
 
+  /**댓글 삭제 컨트롤러 */
   deleteComment = async (req, res, next) => {
-    // 선언 파트
-    const userId = 'temp_userId'; // todo - 토큰 작업 완료 시, userId PK 가져오는 것으로 수정할 것
-    const { commentId } = req.params;
-
-    // 구현 파트
-    const deleteComment = await this.commentService.deleteComment(commentId);
-    return res
-      .status(204)
-      .json({ statusCode: '204', message: '댓글 삭제에 성공했습니다.' });
+    try {
+      const { commentId } = 1;
+      const { userId } = res.locals.user;
+      const commentContent = await this.commentsService.deleteComment({
+        commentId,
+        userId,
+      });
+      console.log(commentContent);
+      res
+        .status(200)
+        .json({ data: commentContent, msg: '댓글을 삭제했습니다.' });
+    } catch (error) {
+      next(error);
+    }
   };
 }
 

@@ -17,34 +17,34 @@ module.exports = (sequelize, DataTypes) => {
   Comments.init(
     {
       commentId: {
-        allowNull: false,
+        // allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
 
       userId: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.INTEGER,
       },
 
       postId: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.INTEGER,
       },
 
       commentContent: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.STRING,
       },
 
       createdAt: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.DATE,
       },
 
       updatedAt: {
-        allowNull: false,
+        // allowNull: false,
         type: DataTypes.DATE,
       },
     },

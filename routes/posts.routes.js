@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../modules/posts.multer');
 const tokenMiddleware = require('../middleware/token-middleware');
-
+const authMiddleware = require('../middleware/authMiddleware');
 const PostsController = require('../controllers/posts.controller');
 const postsController = new PostsController();
 
@@ -20,8 +20,8 @@ router.put('/:postId', tokenMiddleware, postsController.updatePost);
 // post 삭제
 router.delete('/:postId', tokenMiddleware, postsController.deletePost);
 // post 상세 조회
-router.get('/:postId', authMiddleware, postsController.detailPost);
+router.get('/:postId', tokenMiddleware, postsController.detailPost);
 //post 좋아요
-router.put('/like/:postId', authMiddleware, postsController.liketoggle);
+router.put('/like/:postId', tokenMiddleware, postsController.liketoggle);
 
 module.exports = router;

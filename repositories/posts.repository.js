@@ -21,13 +21,6 @@ class PostsRepository {
         {
           model: Likes,
         },
-        // {
-        //   model: Comments,
-        //   include: [
-        //     { model: Users },
-        //     { model: Likes, where: { userId: userId }, required: false },
-        //   ],
-        // },
       ],
     });
     // console.log(postsOne);
@@ -65,11 +58,8 @@ class PostsRepository {
       imageUrl,
       userId,
       postContent,
-<<<<<<< HEAD
       likes:0,
-=======
       place,
->>>>>>> 87352ba8c86b452df9f35fabbf3f4d206e8f161e
     });
     return createPost;
   };
