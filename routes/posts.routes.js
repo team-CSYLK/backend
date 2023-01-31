@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../modules/posts.multer');
 const tokenMiddleware = require('../middleware/token-middleware');
-const authMiddleware = require('../middleware/authMiddleware');
 const PostsController = require('../controllers/posts.controller');
 const postsController = new PostsController();
 
@@ -10,11 +9,11 @@ const postsController = new PostsController();
 router.post(
   '/upload',
   tokenMiddleware,
-  upload.array('image', 1),
+  upload.array('imageUrl', 1),
   postsController.createPosts
 );
 // post 조회
-router.get('/', postsController.readPost);
+router.get('/', tokenMiddleware, postsController.readPost);
 // post 수정
 router.put('/:postId', tokenMiddleware, postsController.updatePost);
 // post 삭제

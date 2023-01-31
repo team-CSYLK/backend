@@ -1,4 +1,5 @@
 const { Users, Posts, Comments, Likes } = require('../models');
+const { sequelize } = require('../models');
 
 class PostsRepository {
   // 게시글 전체 조회
@@ -7,39 +8,41 @@ class PostsRepository {
       include: [{ model: Users }],
     });
 
-    console.log(allPost);
-
     return allPost;
+  };
+
+  // 내가 좋아요한 게시글 전체 조회
+  findAllLike = async (userId) => {
+    const allData = await Likes.findAll({ userId });
+
+    return allData;
+  };
+
+  findOndeLike = async (postId, userId) => {
+    const data = await Likes.findOne({ where: { postId, userId } });
+
+    return data;
   };
 
   // 게시글 상세 조회
   findOnePost = async (postId, userId) => {
     const postsOne = await Posts.findOne({
       where: { postId },
-      include: [
-        {
-          model: Users,
-        },
-<<<<<<< HEAD
-        // {
-        //   model: Likes,
-        // },
-        //   {
-        //     model: Comments,
-        //     include: [
-        //       { model: Users },
-        //       { model: Likes, where: { userId: userId }, required: false },
-        //     ],
-        //   },
-=======
-        {
-          model: Likes,
-        },
->>>>>>> 8cd385feea068d8f6d360fe04e3727b43aa4d007
-      ],
+      include: [{ model: Users }, { model: Likes }, { model: Comments }],
     });
-    // console.log(postsOne);
+
     return postsOne;
+  };
+
+  //댓글 찾기
+  findAllComm = async (postId) => {
+    const [comments, metadata] = await sequelize.query(
+      `SELECT  c.commentId, u.nickname ,u.imageProfile ,c.commentContent ,c.createdAt  
+      FROM Comments c left join Users u on c.userId = u.userId  
+      where c.postId = ${postId}`
+    );
+
+    return comments;
   };
 
   // 게시글 작성자 찾기
@@ -49,14 +52,12 @@ class PostsRepository {
 
   // 게시글 수정
   updatePost = async (postId, postContent) => {
-    console.log(postId, postContent);
     await Posts.update({ postContent }, { where: { postId } });
     return;
   };
 
   //게시글 삭제
   deletePost = async (postId) => {
-    console.log(postId);
     const deletePost = Posts.destroy({
       where: { postId },
     });
@@ -70,31 +71,11 @@ class PostsRepository {
       imageUrl,
       userId,
       postContent,
-      likes:0,
       place,
     });
     return createPost;
   };
 
-<<<<<<< HEAD
-  //게시글 좋아요
-  findLike = async (postId, userId) => {
-    const findLike = await Likes.findOne({ where: { postId, userId } });
-    return findLike;
-  };
-
-  deleteLike = async (postId, userId) => {
-    const deleteLike = await Likes.delete({ where: { postId, userId } });
-    return deleteLike;
-  };
-
-  updateLike = async (postId) => {};
-
-  createLike = async (postId, userId) => {
-    const createLike = await Likes.create({ userId, postId });
-    return createLike;
-  };
-=======
   //*좋아요 데이터 찾기
   findLike = async ({ userId, postId }) => {
     const findLike = await Likes.findOne({ where: { userId, postId } });
@@ -112,10 +93,7 @@ class PostsRepository {
   };
   //*좋아요 on
   upLike = async ({ postId }) => {
-    const upLike = await Posts.increment(
-      { likes: 1 },
-      { where: { postId } }
-    );
+    const upLike = await Posts.increment({ likes: 1 }, { where: { postId } });
     return upLike;
   };
   //*좋아요off
@@ -131,9 +109,6 @@ class PostsRepository {
     const likeCount = await Posts.findOne({ where: { postId } });
     return likeCount;
   };
-
-
->>>>>>> 8cd385feea068d8f6d360fe04e3727b43aa4d007
 }
 
 module.exports = PostsRepository;

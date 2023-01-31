@@ -1,40 +1,33 @@
 const CommentsService = require('../services/comments.service');
-const InvalidParamsError = require('../exceptions/index.exception');
 class CommentsController {
   commentsService = new CommentsService();
   /**댓글 작성 컨트롤러 */
   createComment = async (req, res, next) => {
-    try {
-      const { commentContent } = req.body;
-      const { postId } = 1;
-      const { userId } = 1
+    const { commentContent } = req.body;
+    const { postId } = req.params;
+    const userId = res.locals.userId;
 
-      if (!commentContent) {
-        throw new InvalidParamsError('댓글 내용을 입력해주세요');
-      }
-      await this.commentsService.createComment({
-        commentContent,
-        postId,
-        userId,
-      });
-      res.status(201).json({ msg: '댓글을 작성하였습니다.' });
-    } catch (error) {
-      next(error);
-    }
+    const comment = await this.commentsService.createComment(
+      commentContent,
+      postId,
+      userId
+    );
+
+    return res.status(comment.status || 400).json(comment.message);
   };
 
   /**댓글 수정 컨트롤러 */
   updateComment = async (req, res, next) => {
     try {
-      const { commentId } = req.params;
+      const commentId = req.params;
       const { commentContent } = req.body;
-      const { userId } = 1
+      const userId = res.locals.userId;
 
-      const editcomment = await this.commentsService.updateComment({
+      const editcomment = await this.commentsService.updateComment(
         commentId,
         commentContent,
-        userId,
-      });
+        userId
+      );
       res
         .status(200)
         .json({ data: editcomment, massage: '댓글을 수정하였습니다.' });
@@ -47,11 +40,11 @@ class CommentsController {
   deleteComment = async (req, res, next) => {
     try {
       const { commentId } = 1;
-      const { userId } = res.locals.user;
-      const commentContent = await this.commentsService.deleteComment({
+      const userId = res.locals.userId;
+      const commentContent = await this.commentsService.deleteComment(
         commentId,
-        userId,
-      });
+        userId
+      );
       console.log(commentContent);
       res
         .status(200)

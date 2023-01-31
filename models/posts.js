@@ -12,18 +12,24 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: 'postId',
         foreignKey: 'postId',
       });
+
+      this.hasMany(models.Comments, {
+        sourceKey: 'postId',
+        foreignKey: 'postId',
+      });
     }
   }
   Posts.init(
     {
       postId: {
-        // allowNull: false,
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
 
       userId: {
+        allowNull: false,
         type: DataTypes.INTEGER,
       },
 

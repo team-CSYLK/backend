@@ -158,13 +158,6 @@ class UsersService {
   };
 
   setUserProfile = async (userId, name, nickname, introduce, imageUrl) => {
-    const newData = await this.usersRepository.setUserProfile(
-      userId,
-      name,
-      nickname,
-      introduce,
-      imageUrl
-    );
     const checkNickname = /^[a-zA-Z0-9]{3,}$/;
     const checkedNickname = checkNickname.test(nickname);
     const nicknameExist = await this.usersRepository.findNick(nickname);
@@ -184,7 +177,19 @@ class UsersService {
           errorMessage: '중복된 닉네임입니다.',
         };
         throw error;
-      } else if (!newData) {
+      }
+
+      const newData = await this.usersRepository.setUserProfile(
+        userId,
+        name,
+        nickname,
+        introduce,
+        imageUrl
+      );
+
+      const userData = await this.usersRepository.findUser(userId);
+
+      if (!userData) {
         error.status = 404;
         error.message = {
           statusCode: 404,
@@ -197,10 +202,10 @@ class UsersService {
       success.message = {
         statusCode: 200,
         data: {
-          name: newData.name,
-          nickname: newData.nickname,
-          introduce: newData.introduce,
-          imageUrl: newData.imageProfile,
+          name: userData.name,
+          nickname: userData.nickname,
+          introduce: userData.introduce,
+          imageUrl: userData.imageProfile,
         },
       };
       return success;

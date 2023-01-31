@@ -64,15 +64,12 @@ class UsersRepository {
   };
 
   setUserProfile = async (userId, name, nickname, introduce, imageUrl) => {
-    console.log(userId, name, nickname, introduce, imageUrl);
-    const updatData = await Users.update(
+    await Users.update(
       { name, nickname, introduce, imageProfile: imageUrl },
       { where: { userId } }
     );
 
-    const newData = await Users.findOne({ where: { userId } });
-
-    return newData;
+    return;
   };
 }
 module.exports = UsersRepository;
