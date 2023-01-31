@@ -17,6 +17,11 @@ module.exports = (sequelize, DataTypes) => {
         sourceKey: 'userId',
         foreignKey: 'userId',
       });
+
+      this.hasMany(models.Refereshtoken, {
+        sourceKey: 'userId',
+        foreignKey: 'userId',
+      });
     }
   }
   Users.init(
@@ -38,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
 
-      password: {
+      introduce: {
         type: DataTypes.STRING,
         allowNull: true,
       },
@@ -48,10 +53,12 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       snsId: {
+        allowNull: false,
         type: DataTypes.STRING,
       },
 
       provider: {
+        allowNull: false,
         type: DataTypes.STRING,
       },
 

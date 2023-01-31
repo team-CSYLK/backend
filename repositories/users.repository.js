@@ -1,4 +1,4 @@
-const { Users, Posts } = require('../models');
+const { Users, Posts, Refereshtoken } = require('../models');
 class UsersRepository {
   findUser = async (userId) => {
     const user = await Users.findByPk(userId);
@@ -8,7 +8,6 @@ class UsersRepository {
 
   findNick = async (nickname) => {
     const nicknameEx = await Users.findOne({ where: { nickname } });
-    console.log(nicknameEx);
 
     return nicknameEx;
   };
@@ -16,25 +15,14 @@ class UsersRepository {
   findByuserId = async (userId) => {
     const posts = await Posts.findAll({ where: { userId } });
 
-    console.log(posts);
-
     return posts;
   };
 
   createNickname = async (nickname, userId) => {
-    const newNickname = await Users.update({ nickname }, { where: { userId } });
+    const setNickname = await Users.update({ nickname }, { where: { userId } });
+    const newNickname = await Users.findOne({ where: { userId: setNickname } });
 
-    return newNickname;
-  };
-
-  createUser = async ({ email, name, nickname, password }) => {
-    await Users.create({
-      email,
-      name,
-      nickname,
-      password,
-    });
-    return;
+    return newNickname.nickname;
   };
 
   findByEmail = async (email) => {
@@ -61,6 +49,30 @@ class UsersRepository {
       provider: provider,
     });
     return newUser;
+  };
+
+  findUserToken = async (userId) => {
+    return await Refereshtoken.findOne({ where: { userId } });
+  };
+
+  updateToken = async (refreshToken, userId) => {
+    return await Refereshtoken.update({ refreshToken }, { where: { userId } });
+  };
+
+  createToken = async (refreshToken, userId) => {
+    return await Refereshtoken.create({ refreshToken, userId });
+  };
+
+  setUserProfile = async (userId, name, nickname, introduce, imageUrl) => {
+    console.log(userId, name, nickname, introduce, imageUrl);
+    const updatData = await Users.update(
+      { name, nickname, introduce, imageProfile: imageUrl },
+      { where: { userId } }
+    );
+
+    const newData = await Users.findOne({ where: { userId } });
+
+    return newData;
   };
 }
 module.exports = UsersRepository;

@@ -8,7 +8,6 @@ class PostsController {
   // 게시글 작성 v
   createPosts = async (req, res, next) => {
     const { postContent } = req.body;
-    // const { userId } = res.locals.user;
     const userId = res.locals.userId;
 
     try {
@@ -36,7 +35,7 @@ class PostsController {
   // 특정 게시글 조회 v
   detailPost = async (req, res) => {
     try {
-      const { userId } = res.locals.user;
+      const userId = res.locals.userId;
       const { postId } = req.params;
       const onePosts = await this.postsService.findOnePost(postId, userId);
       return res.status(200).json({ post: onePosts });
@@ -52,7 +51,7 @@ class PostsController {
     try {
       const { postId } = req.params;
       const { postContent } = req.body;
-      console.log('확인',postContent)
+      console.log('확인', postContent);
       await this.postsService.updatePost(postId, postContent);
       res.sendStatus(201);
     } catch (error) {

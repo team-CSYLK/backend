@@ -2,36 +2,23 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
-      userId: {
+    await queryInterface.createTable('Refereshtokens', {
+      tokenid: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      email: {
+      userId: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Users',
+          key: 'userId',
+        },
       },
-      name: {
+      refreshToken: {
         allowNull: false,
-        type: Sequelize.STRING,
-      },
-      nickname: {
-        type: Sequelize.STRING,
-      },
-      introduce: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      snsId: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      provider: {
-        type: Sequelize.STRING,
-      },
-      imageProfile: {
         type: Sequelize.STRING,
       },
       createdAt: {
@@ -45,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Refereshtokens');
   },
 };

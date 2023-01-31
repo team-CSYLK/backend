@@ -20,7 +20,7 @@ router.put('/:postId', tokenMiddleware, postsController.updatePost);
 // post 삭제
 router.delete('/:postId', tokenMiddleware, postsController.deletePost);
 // post 상세 조회
-router.get('/:postId', authMiddleware, postsController.detailPost);
+router.get('/:postId', tokenMiddleware, postsController.detailPost);
 //post 좋아요
 router.put('/like/:postId', postsController.likePost);
 

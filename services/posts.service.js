@@ -30,6 +30,7 @@ class PostsService {
       return {
         postId: posts.postId,
         userId: posts.userId,
+        nickname: posts.User.nickname,
         postContent: posts.postContent,
         image: posts.imageUrl,
         createdAt: posts.createdAt,

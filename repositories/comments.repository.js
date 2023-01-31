@@ -1,12 +1,9 @@
+const { Comments } = require('../models');
 class CommentRepository {
-  constructor(CommentsModel) {
-    this.commentsModel = CommentsModel;
-  }
-
   createComment = async (data) => {
     const { userId, postId, commentContent } = data;
 
-    const result = await this.commentsModel.create({
+    const result = await Comments.create({
       userId,
       postId,
       commentContent,
@@ -17,7 +14,7 @@ class CommentRepository {
   updateComment = async (data) => {
     const { commentId, commentContent } = data;
 
-    const result = await this.commentsModel.update(
+    const result = await Comments.update(
       { commentContent },
       { where: { commentId } }
     );
@@ -28,9 +25,11 @@ class CommentRepository {
   deleteComment = async (data) => {
     const { commentId } = data;
 
-    const result = await this.commentsModel.destroy({
+    const result = await Comments.destroy({
       where: { commentId },
     });
     return result;
   };
 }
+
+module.exports = CommentRepository;
