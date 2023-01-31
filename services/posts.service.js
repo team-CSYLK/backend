@@ -6,13 +6,9 @@ class PostsService {
   postsRepository = new PostsRepository();
 
   // 게시글 작성
-<<<<<<< HEAD
-  createPost = async (imageUrl, userId, postContent) => {
-=======
 
   createPost = async (imageUrl, userId, postContent) => {
     const place = '강동구';
->>>>>>> 87352ba8c86b452df9f35fabbf3f4d206e8f161e
     const createPostData = await this.postsRepository.createPost(
       imageUrl,
       userId,
@@ -59,15 +55,9 @@ class PostsService {
 
   // 게시글 삭제
   deletePosts = async (postId, userId) => {
-<<<<<<< HEAD
-    // console.log(postId, Users)
-    const findPost = await this.postsRepository.findOnePost(postId);
-    // console.log(findPost.userId , userId)
-=======
     console.log(postId, Users);
     const findPost = await this.postsRepository.findOnePost(postId);
     console.log(findPost.userId, userId);
->>>>>>> 87352ba8c86b452df9f35fabbf3f4d206e8f161e
     if (findPost.userId == userId) {
       await this.postsRepository.deletePost(postId);
       return;

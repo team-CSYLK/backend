@@ -1,36 +1,38 @@
-class CommentRepository {
-  constructor(CommentsModel) {
-    this.commentsModel = CommentsModel;
+const { Comments } = require('../models/');
+
+class CommentRepository extends Comments {
+  constructor() {
+    super();
   }
-
-  createComment = async (data) => {
-    const { userId, postId, commentContent } = data;
-
-    const result = await this.commentsModel.create({
+  //*댓글작성
+  createComment = async ({ commentContent, postId, userId }) => {
+    const createComment = await Comments.create({
+      commentContent,
       userId,
       postId,
-      commentContent,
     });
-    return result;
+    return createComment;
+  };
+  //*댓글 찾기
+  findOneComment = async ({ commentId }) => {
+    const comments = await Comments.findOne({ where: { commentId } });
+    return comments;
   };
 
-  updateComment = async (data) => {
-    const { commentId, commentContent } = data;
-
-    const result = await this.commentsModel.update(
+  //*댓글수정
+  updateComment = async ({ userId, commentContent, commentId }) => {
+    const updateComment = await Comments.update(
       { commentContent },
-      { where: { commentId } }
+      { where: { commentId: commentId, userId: userId } }
     );
-
-    return result;
+    return updateComment;
   };
-
-  deleteComment = async (data) => {
-    const { commentId } = data;
-
-    const result = await this.commentsModel.destroy({
+  //*댓글 삭제
+  deleteComment = async ({ commentId }) => {
+    const deleteComment = await Comments.destroy({
       where: { commentId },
     });
-    return result;
+    return deleteComment;
   };
 }
+module.exports = CommentRepository;
