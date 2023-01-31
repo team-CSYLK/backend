@@ -51,8 +51,9 @@ app.get('/', (req, res) => {
   }
 });
 
+//(배포시에만 열어)
 // const corsOption = {
-//   origin: '*',
+//   origin: 'http://localhost:3000',
 //   exposedHeaders: ['Authorization', 'nickname'],
 //   credentials: true,
 // };

@@ -10,7 +10,6 @@ class PostsController {
   // 게시글 작성 v
   createPosts = async (req, res, next) => {
     const { postContent } = req.body;
-    // const { userId } = res.locals.user;
     const userId = res.locals.userId;
 
     try {
@@ -54,7 +53,7 @@ class PostsController {
     try {
       const { postId } = req.params;
       const { postContent } = req.body;
-      console.log('확인',postContent)
+      console.log('확인', postContent);
       await this.postsService.updatePost(postId, postContent);
       res.sendStatus(201);
     } catch (error) {

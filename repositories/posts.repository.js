@@ -4,8 +4,10 @@ class PostsRepository {
   // 게시글 전체 조회
   findAllPost = async () => {
     const allPost = await Posts.findAll({
-      include: [{ model: Users }, { model: Likes }],
+      include: [{ model: Users }],
     });
+
+    console.log(allPost);
 
     return allPost;
   };
@@ -34,17 +36,14 @@ class PostsRepository {
 
   // 게시글 수정
   updatePost = async (postId, postContent) => {
-    console.log(postId, postContent)
-    await Posts.update(
-      { postContent},
-      { where: { postId } }
-    );
+    console.log(postId, postContent);
+    await Posts.update({ postContent }, { where: { postId } });
     return;
   };
 
   //게시글 삭제
   deletePost = async (postId) => {
-    console.log(postId)
+    console.log(postId);
     const deletePost = Posts.destroy({
       where: { postId },
     });
