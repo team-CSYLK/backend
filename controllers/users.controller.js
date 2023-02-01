@@ -91,7 +91,10 @@ class UsersController {
 
         res.header(userData.nickname);
         res.header('Authorization', `Bearer ${accessToken}`);
-        res.send(userData.nickname); // 프론트엔드에 닉네임
+        res.json({
+          nickname: userData.nickname,
+          imageUrl: userData.imageProfile,
+        }); // 프론트엔드에 닉네임
         return;
       }
     } catch (error) {

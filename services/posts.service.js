@@ -41,9 +41,22 @@ class PostsService {
   // 전체 게시글 조회
   findAllPost = async (userId) => {
     const getAllPost = await this.postsRepository.findAllPost(userId);
+    const now = new Date();
     try {
-      console.log(getAllPost);
       const data = getAllPost.map((post) => {
+        const createdTime = new Date(post.createdAt);
+        const timeGap = now - createdTime;
+        let result = '';
+
+        if (Math.floor(timeGap / (1000 * 60 * 60 * 24)) !== 0) {
+          result = `${Math.floor(timeGap / (1000 * 60 * 60 * 24))}일 전`;
+        } else if (Math.floor(timeGap / (1000 * 60 * 60)) !== 0) {
+          result = `${Math.floor(timeGap / (1000 * 60 * 60))}시간 전`;
+        } else if (Math.floor(timeGap / (1000 * 60)) !== 0) {
+          result = `${Math.floor(timeGap / (1000 * 60))}분 전`;
+        } else {
+          result = `방금전`;
+        }
         return {
           postId: post.postId,
           userId: post.userId,
@@ -54,7 +67,7 @@ class PostsService {
           likes: post.likes,
           isLiked: userId === post.likeUserId ? true : false,
           place: post.place,
-          createdAt: post.createdAt,
+          createdAt: result,
         };
       });
 
@@ -78,6 +91,22 @@ class PostsService {
     } else {
       isLiked = false;
     }
+    const now = new Date();
+    // const createdTime = postOne.createdAt;
+    const createdTime = new Date(postOne.createdAt);
+
+    const timeGap = now - createdTime;
+    let result = '';
+
+    if (Math.floor(timeGap / (1000 * 60 * 60 * 24)) !== 0) {
+      result = `${Math.floor(timeGap / (1000 * 60 * 60 * 24))}일 전`;
+    } else if (Math.floor(timeGap / (1000 * 60 * 60)) !== 0) {
+      result = `${Math.floor(timeGap / (1000 * 60 * 60))}시간 전`;
+    } else if (Math.floor(timeGap / (1000 * 60)) !== 0) {
+      result = `${Math.floor(timeGap / (1000 * 60))}분 전`;
+    } else {
+      result = `방금전`;
+    }
 
     const data = [
       {
@@ -88,7 +117,7 @@ class PostsService {
           likes: postOne.likes,
           isLiked: isLiked,
           place: postOne.place,
-          createdAt: postOne.createdAt,
+          createdAt: result,
         },
         comments,
       },
