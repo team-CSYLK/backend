@@ -1,12 +1,7 @@
 const UsersService = require('../services/users.service');
-const joi = require('../util/joi');
-const bcrypt = require('bcrypt');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
-const {
-  InvalidParamsError,
-  ValidationError,
-} = require('../exceptions/index.exception');
+const aws = require('aws-sdk');
 require('dotenv').config();
 
 class UsersController {
@@ -16,20 +11,12 @@ class UsersController {
     const { nickname } = req.body;
     const userId = res.locals.userId;
 
-    const checkNickname = /^[a-zA-Z0-9]{3,}$/;
-
-    if (!checkNickname.test(nickname)) {
-      throw error;
-    }
-
     const newNickname = await this.usersService.createNickname(
       nickname,
       userId
     );
 
-    res
-      .status(201)
-      .json({ statusCode: 201, message: '닉네임이 변경되었습니다' });
+    return res.status(newNickname.status || 400).json(newNickname.message);
   };
 
   userProfile = async (req, res) => {
@@ -37,7 +24,7 @@ class UsersController {
 
     const profile = await this.usersService.findUser(nickname);
 
-    res.status(201).json({ statusCode: 201, data: profile });
+    res.status(profile.status || 400).json(profile.message);
   };
 
   userKakao = async (req, res) => {
@@ -82,22 +69,60 @@ class UsersController {
         provider
       );
 
+      const userId = userData.userId;
+
       if (userData) {
         const accessToken = jwt.sign(
-          { userId: userData.userId },
+          { userId: userId },
           process.env.SECRETKEY,
           {
             expiresIn: '1d',
           }
         );
+        const refreshToken = jwt.sign(
+          { userId: userId },
+          process.env.SECRETKEY,
+          {
+            expiresIn: '5d',
+          }
+        );
 
-        res.header('nickname', userData.nickname);
+        await this.usersService.setRefreshtoken(refreshToken, userId);
+
+        res.header(userData.nickname);
         res.header('Authorization', `Bearer ${accessToken}`);
-        res.send(`nickname : ${userData.nickname}`); // 프론트엔드에 닉네임
+        res.json({
+          nickname: userData.nickname,
+          imageUrl: userData.imageProfile,
+        }); // 프론트엔드에 닉네임
+        return;
       }
-    } catch (err) {
-      throw err.message;
+    } catch (error) {
+      throw error;
     }
+  };
+
+  getUserProfile = async (req, res) => {
+    const userId = res.locals.userId;
+    const userData = await this.usersService.getUserProfile(userId);
+
+    res.status(userData.status || 400).json(userData.message);
+  };
+
+  setUserProfile = async (req, res) => {
+    const userId = res.locals.userId;
+    const { name, nickname, introduce } = req.body;
+    const imageProfile = req.files[0].transforms[0].location;
+
+    const setData = await this.usersService.setUserProfile(
+      userId,
+      name,
+      nickname,
+      introduce,
+      imageProfile
+    );
+
+    res.status(setData.status || 400).json(setData.message);
   };
 }
 
